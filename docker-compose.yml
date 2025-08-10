@@ -1,0 +1,33 @@
+version: "3.9"
+
+networks:
+  app-management-network:
+    driver: bridge
+
+services:
+  eureka-server:
+    build:
+      context: ./app-management-eureka
+      dockerfile: Dockerfile
+    container_name: app-management-eureka-server
+    ports:
+      - "8761:8761"
+      - "7701:7701"
+    environment:
+      - SPRING_PROFILES_ACTIVE=production
+      - EUREKA_SECURITY_USER=admin
+      - EUREKA_SECURITY_PASSWORD=StrongPassword123
+      - BUILD_TIME=2025-08-10T12:00:00Z
+    networks:
+      - app-management-network
+    volumes:
+      - eureka-logs:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7701/app-management-eureka-info/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  eureka-logs:

@@ -1,0 +1,23 @@
+server:
+  port: 8761
+
+management:
+  info:
+    env:
+      enabled: true
+  server:
+    port: 7701          
+  endpoints:
+    web:
+      base-path: /app-management-eureka-info
+      exposure:
+        include: health,info,metrics,prometheus,env
+  endpoint:
+    health:
+      show-details: always
+info:
+  name: ${spring.application.name:eureka-server}
+  version: ${spring.application.version:1.0.0}
+  description: "Service Eureka Server per discovery"
+  maintainer: "Roberto <roberto@example.com>"
+  build.time: "${BUILD_TIME:-unknown}"
