@@ -56,5 +56,36 @@ services:
       retries: 3
       start_period: 10s
 
+  gateway-server:
+    build:
+      context: ./app-management-gateway
+      dockerfile: Dockerfile
+    container_name: app-management-gateway-server
+    ports:
+      - "8989:8989"
+      - "7703:7703"
+    environment:
+      - SPRING_PROFILES_ACTIVE=production
+      - EUREKA_SECURITY_USER=admin
+      - EUREKA_SECURITY_PASSWORD=StrongPassword123
+      - CONFIG_SECURITY_USER=configadmin
+      - CONFIG_SECURITY_PASSWORD=SuperSecurePassword
+      - GATEWAY_SECURITY_USER=gatewayadmin
+      - GATEWAY_SECURITY_PASSWORD=SuperSecurePassword
+      - BUILD_TIME=2025-08-10T12:00:00Z
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    networks:
+      - app-management-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f -u gatewayadmin:SuperSecurePassword http://localhost:7703/app-management-gateway-info/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
 volumes:
   eureka-logs:

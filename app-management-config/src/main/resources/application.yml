@@ -3,7 +3,7 @@ server:
 
 spring:
   profiles:
-    active: production
+    active: development
   application:
     name: app-management-config
   cloud:
