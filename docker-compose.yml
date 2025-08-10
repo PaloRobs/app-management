@@ -23,7 +23,34 @@ services:
     volumes:
       - eureka-logs:/app/logs
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:7701/app-management-eureka-info/health"]
+      test: ["CMD-SHELL", "curl -f -u admin:StrongPassword123 http://localhost:7701/app-management-eureka-info/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  config-server:
+    build:
+      context: ./app-management-config
+      dockerfile: Dockerfile
+    container_name: app-management-config-server
+    ports:
+      - "8888:8888"
+      - "7702:7702"
+    environment:
+      - SPRING_PROFILES_ACTIVE=production
+      - EUREKA_SECURITY_USER=admin
+      - EUREKA_SECURITY_PASSWORD=StrongPassword123
+      - CONFIG_SECURITY_USER=configadmin
+      - CONFIG_SECURITY_PASSWORD=SuperSecurePassword
+      - BUILD_TIME=2025-08-10T12:00:00Z
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - app-management-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f -u configadmin:SuperSecurePassword http://localhost:7702/app-management-config-info/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3

@@ -1,0 +1,23 @@
+server:
+  port: 8888  
+
+spring:
+  profiles:
+    active: production
+  application:
+    name: app-management-config
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/PaloRobs/app-management-config.git
+          default-label: main
+          clone-on-start: true
+          # search-paths:       # se vuoi caricare configurazioni da cartelle specifiche dentro il repo
+          # - config
+          # - common
+          # username:           # se repo privato, user/pass
+          # password:
+
+
+

@@ -1,0 +1,33 @@
+management:
+  info:
+    env:
+      enabled: true
+  server:
+    port: 7702       
+  endpoints:
+    web:
+      base-path: /app-management-config-info
+      exposure:
+        include: health,info,metrics,prometheus,env
+  endpoint:
+    health:
+      show-details: when-authorized
+spring:
+  security:
+    user:
+      name: ${CONFIG_SECURITY_USER}
+      password: ${CONFIG_SECURITY_PASSWORD}
+      roles: ACTUATOR
+info:
+  name: ${spring.application.name:eureka-server}
+  version: ${spring.application.version:1.0.0}
+  description: "Config Server"
+  maintainer: "Roberto <roberto@example.com>"
+  build.time: "${BUILD_TIME:-unknown}"
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://${EUREKA_SECURITY_USER}:${EUREKA_SECURITY_PASSWORD}@eureka-server:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true

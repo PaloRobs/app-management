@@ -1,0 +1,27 @@
+management:
+  info:
+    env:
+      enabled: true
+  server:
+    port: 7702          
+  endpoints:
+    web:
+      base-path: /app-management-config-info
+      exposure:
+        include: health,info,metrics,prometheus,env
+  endpoint:
+    health:
+      show-details: always
+info:
+  name: ${spring.application.name}
+  version: ${spring.application.version}
+  description: "Config Server"
+  maintainer: "Roberto <roberto@example.com>"
+  build.time: "${BUILD_TIME:-unknown}"
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true

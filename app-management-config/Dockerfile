@@ -12,5 +12,5 @@ WORKDIR /app
 RUN apk add --no-cache curl
 RUN apk add --no-cache curl
 COPY --from=build /app/target/*.jar app.jar
-EXPOSE 8761 7701
+EXPOSE 8888 7702
 ENTRYPOINT ["java", "-jar", "app.jar"]
