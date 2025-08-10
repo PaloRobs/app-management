@@ -23,3 +23,7 @@
 hs_err_pid*
 replay_pid*
 /.metadata/
+keycloak-user-sync-listener/.classpath
+keycloak-user-sync-listener/.factorypath
+keycloak-user-sync-listener/.project
+/keycloak-user-sync-listener/.settings
