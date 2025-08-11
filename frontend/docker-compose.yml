@@ -2,7 +2,7 @@ version: "3.9"
 
 networks:
   app-management-network:
-    driver: bridge
+     external: true
 
 services:
   keycloak-postgres:

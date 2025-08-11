@@ -1,0 +1,10 @@
+server:
+  port: 8585
+spring:
+  application:
+    name: app-management-keycloack-listener
+
+logging:
+  level:
+    root: INFO
+    it.eus.app_management_keycloack_listener: INFO

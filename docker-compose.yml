@@ -2,7 +2,7 @@ version: "3.9"
 
 networks:
   app-management-network:
-    driver: bridge
+     external: true
 
 services:
   eureka-server:
@@ -87,5 +87,14 @@ services:
       retries: 3
       start_period: 10s
 
+  user-server:
+    build:
+      context: ./app-management-keycloack-listener
+      dockerfile: Dockerfile
+    container_name: app-management-keycloak-listener
+    ports:
+      - "8585:8585"
+    networks:
+      - app-management-network
 volumes:
   eureka-logs:

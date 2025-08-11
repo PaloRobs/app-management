@@ -1,0 +1,5 @@
+it\eustema\keycloacklistener\model\UserSyncDto.class
+it\eustema\keycloacklistener\provider\UserSyncEventListenerProviderFactory.class
+it\eustema\keycloacklistener\provider\UserSyncEventListenerProvider$1.class
+it\eustema\keycloacklistener\provider\UserSyncEventListenerProvider.class
+it\eustema\keycloacklistener\model\UserSyncDto$UserSyncDtoBuilder.class
