@@ -8,13 +8,14 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class GatewayRouteConfig {
 
-    @Bean
-     RouteLocator routeLocator(RouteLocatorBuilder builder) {
-        return builder.routes()
-            .route("dummy-route", r -> r
-                .path("/dummy-route")
-                .uri("https://httpbin.org:80")
-            )
-            .build();
-    }
+	@Bean
+	RouteLocator routeLocator(RouteLocatorBuilder builder) {
+	    return builder.routes()
+	        .route("user-service", r -> r
+	            .path("/api/v1/users/**")
+	            .filters(f -> f.tokenRelay())   // ATTENZIONE: abilita il token relay qui
+	            .uri("http://user-service:8585") // backend MS user-service
+	        )
+	        .build();
+	}
 }

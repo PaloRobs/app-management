@@ -3,7 +3,7 @@ management:
     env:
       enabled: true
   server:
-    port: 7703       
+    port: 7703
   endpoints:
     web:
       base-path: /app-management-gateway-info
@@ -12,6 +12,7 @@ management:
   endpoint:
     health:
       show-details: when-authorized
+
 spring:
   config:
     import: "optional:configserver:http://config-server:8888"
@@ -20,10 +21,25 @@ spring:
       name: ${GATEWAY_SECURITY_USER}
       password: ${GATEWAY_SECURITY_PASSWORD}
       roles: ACTUATOR
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:8090/realms/dashboard
+      client:
+        registration:
+          keycloak:
+            client-id: dashboard-gateway
+            client-secret: gateway-secret-key
+            authorization-grant-type: client_credentials
+            scope: openid,profile,email
+        provider:
+          keycloak:
+            issuer-uri: http://keycloak:8090/realms/dashboard
+
 info:
   name: ${spring.application.name:eureka-server}
   version: ${spring.application.version:1.0.0}
-  description: "ApiGateway Server"
+  description: "Service Eureka Server per discovery"
   maintainer: "Roberto <roberto@example.com>"
   build.time: "${BUILD_TIME:-unknown}"
 

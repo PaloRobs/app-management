@@ -5,10 +5,6 @@ spring:
     active: development
   application:
     name: app-management-gateway
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://keycloak:8090/realms/dashboard
+
 
 

@@ -3,6 +3,11 @@ server:
 spring:
   application:
     name: app-management-keycloack-listener
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:8090/realms/dashboard
 
 logging:
   level:

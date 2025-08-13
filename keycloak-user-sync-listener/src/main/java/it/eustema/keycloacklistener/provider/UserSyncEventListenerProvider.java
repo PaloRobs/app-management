@@ -2,12 +2,18 @@ package it.eustema.keycloacklistener.provider;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.jboss.logging.Logger;
 import org.keycloak.events.Event;
 import org.keycloak.events.EventListenerProvider;
@@ -19,6 +25,7 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import it.eustema.keycloacklistener.model.UserSyncDto;
@@ -104,22 +111,24 @@ public class UserSyncEventListenerProvider implements EventListenerProvider {
     // ... (altri metodi privati come buildUserSyncDto, sendToUserService, ecc. invariati) ...
     
     private void sendToUserService(UserSyncDto syncDto) throws IOException {
-        HttpPost request = new HttpPost(userServiceUrl);
+        String token = getServiceAccountToken();
+
+        HttpPost request = new HttpPost(userServiceUrl); // userServiceUrl dovrebbe puntare al gateway
         
         request.setHeader("Content-Type", "application/json");
         request.setHeader("Accept", "application/json");
         request.setHeader("User-Agent", "Keycloak-UserSync-Listener/1.0");
+        request.setHeader("Authorization", "Bearer " + token);
 
         String jsonPayload = objectMapper.writeValueAsString(syncDto);
         request.setEntity(new StringEntity(jsonPayload, StandardCharsets.UTF_8));
-        
+
         log.debugf("Sending sync request: %s", jsonPayload);
-        
+
         try (CloseableHttpResponse response = httpClient.execute(request)) {
             int statusCode = response.getStatusLine().getStatusCode();
-            
+
             if (statusCode < 200 || statusCode >= 300) {
-                // Se la risposta non è di successo, lancia un'eccezione controllata
                 throw new IOException("HTTP error: " + statusCode + " - " + response.getStatusLine().getReasonPhrase());
             }
             log.debugf("User sync successful - HTTP %d", statusCode);
@@ -187,6 +196,30 @@ public class UserSyncEventListenerProvider implements EventListenerProvider {
             }
         } catch (IOException e) {
             log.error("Error closing HTTP client", e);
+        }
+    }
+    
+    private String getServiceAccountToken() throws IOException {
+        String tokenUrl = "http://keycloak:8090/realms/dashboard/protocol/openid-connect/token";
+        String clientId =  "user-sync-client";
+        String clientSecret =  "p6KppjtYe0wtxaRcTsNbcGEU0dxmtRSM";
+
+        HttpPost post = new HttpPost(tokenUrl);
+        List<NameValuePair> params = new ArrayList<>();
+        params.add(new BasicNameValuePair("grant_type", "client_credentials"));
+        params.add(new BasicNameValuePair("client_id", clientId));
+        params.add(new BasicNameValuePair("client_secret", clientSecret));
+        post.setEntity(new UrlEncodedFormEntity(params, StandardCharsets.UTF_8));
+
+        try (CloseableHttpResponse response = httpClient.execute(post)) {
+            int status = response.getStatusLine().getStatusCode();
+            if (status >= 200 && status < 300) {
+                String json = EntityUtils.toString(response.getEntity());
+                JsonNode node = objectMapper.readTree(json);
+                return node.get("access_token").asText();
+            } else {
+                throw new IOException("Failed to get token: " + status);
+            }
         }
     }
 }
